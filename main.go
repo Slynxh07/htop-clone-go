@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/Slynxh07/htop-clone-go/ram"
+)
 
 func main() {
-	fmt.Println("Cpu is probably in use")
+	ram.ReadMemInfo()
+	fmt.Println()
+	ram.ReadMemInfoByLine()
 }
