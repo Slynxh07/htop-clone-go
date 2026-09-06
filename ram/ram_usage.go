@@ -1,34 +1,31 @@
 package ram
 
 import (
-	"bufio"
-	"fmt"
 	"log"
-	"os"
+	"strconv"
+	"strings"
+
+	fileio "github.com/Slynxh07/htop-clone-go/file_io"
 )
 
-func ReadMemInfoByLine() {
-	file, err := os.Open("/proc/meminfo")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		if err := scanner.Err(); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(scanner.Text())
-	}
-}
-
-func ReadMemInfo() {
-	data, err := os.ReadFile("/proc/meminfo")
+func CalculateRAMUsage(r RAMInfo) float64 {
+	availableMemString, err := fileio.ReadLine(3, r.file)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(data))
+	availableMemString = strings.TrimPrefix(availableMemString, "MemAvailable: ")
+	availableMemString = strings.TrimSuffix(availableMemString, " kB")
+	availableMemString = strings.ReplaceAll(availableMemString, " ", "")
+
+	availableMem, err := strconv.Atoi(availableMemString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	availableMemGib := float64(availableMem) / (1024 * 1024)
+
+	usedMemGib := r.totalMemGib - availableMemGib
+
+	return usedMemGib
 }
