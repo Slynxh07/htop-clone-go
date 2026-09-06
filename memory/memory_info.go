@@ -1,4 +1,4 @@
-package ram
+package memory
 
 import (
 	"fmt"
@@ -10,12 +10,15 @@ import (
 	fileio "github.com/Slynxh07/htop-clone-go/file_io"
 )
 
-type RAMInfo struct {
+type SwapMemGib float64
+type RAMMemGib float64
+
+type MemoryInfo struct {
 	file        *os.File
-	totalMemGib float64
+	totalMemGib RAMMemGib
 }
 
-func NewRAMInfo() (*RAMInfo, error) {
+func NewMemoryInfo() (*MemoryInfo, error) {
 	file, err := fileio.OpenFile("/proc/meminfo")
 	if err != nil {
 		return nil, err
@@ -35,18 +38,22 @@ func NewRAMInfo() (*RAMInfo, error) {
 		log.Fatal(err)
 	}
 
-	totalMemGib := float64(totalMem) / (1024 * 1024)
+	totalMemGib := RAMMemGib(totalMem) / (1024 * 1024)
 
-	return &RAMInfo{
+	return &MemoryInfo{
 		file:        file,
 		totalMemGib: totalMemGib,
 	}, nil
 }
 
-func (r *RAMInfo) Close() error {
-	err := r.file.Close()
+func (m *MemoryInfo) Close() error {
+	err := m.file.Close()
 	if err == nil {
 		fmt.Println("Closed /proc/meminfo")
 	}
 	return err
+}
+
+func (m MemoryInfo) GetTotalMem() RAMMemGib {
+	return m.totalMemGib
 }

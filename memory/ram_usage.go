@@ -1,4 +1,4 @@
-package ram
+package memory
 
 import (
 	"log"
@@ -8,8 +8,8 @@ import (
 	fileio "github.com/Slynxh07/htop-clone-go/file_io"
 )
 
-func CalculateRAMUsage(r RAMInfo) float64 {
-	availableMemString, err := fileio.ReadLine(3, r.file)
+func CalculateRAMUsage(m MemoryInfo) RAMMemGib {
+	availableMemString, err := fileio.ReadLine(3, m.file)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,9 +23,7 @@ func CalculateRAMUsage(r RAMInfo) float64 {
 		log.Fatal(err)
 	}
 
-	availableMemGib := float64(availableMem) / (1024 * 1024)
+	availableMemGib := RAMMemGib(availableMem) / (1024 * 1024)
 
-	usedMemGib := r.totalMemGib - availableMemGib
-
-	return usedMemGib
+	return m.totalMemGib - availableMemGib
 }
