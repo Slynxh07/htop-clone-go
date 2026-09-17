@@ -1,17 +1,16 @@
 package memory
 
 import (
-	"log"
 	"strconv"
 	"strings"
 
 	fileio "github.com/Slynxh07/htop-clone-go/file_io"
 )
 
-func GetTotalSwapMem(m MemoryInfo) SwapMemGib {
+func GetTotalSwapMem(m MemoryInfo) (SwapMemGib, error) {
 	totalSwapMemString, err := fileio.ReadLine(15, m.file)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	totalSwapMemString = strings.TrimPrefix(totalSwapMemString, "SwapTotal: ")
@@ -20,16 +19,16 @@ func GetTotalSwapMem(m MemoryInfo) SwapMemGib {
 
 	totalSwapMem, err := strconv.Atoi(totalSwapMemString)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
-	return SwapMemGib(totalSwapMem) / (1024 * 1024)
+	return SwapMemGib(totalSwapMem) / (1024 * 1024), nil
 }
 
-func CalculateSwapMemUsage(m MemoryInfo, totalSwapMemGib SwapMemGib) SwapMemGib {
+func CalculateSwapMemUsage(m MemoryInfo, totalSwapMemGib SwapMemGib) (SwapMemGib, error) {
 	freeSwapMemString, err := fileio.ReadLine(16, m.file)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	freeSwapMemString = strings.TrimPrefix(freeSwapMemString, "SwapFree: ")
@@ -38,10 +37,10 @@ func CalculateSwapMemUsage(m MemoryInfo, totalSwapMemGib SwapMemGib) SwapMemGib 
 
 	freeSwapMem, err := strconv.Atoi(freeSwapMemString)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	freeSwapMemGib := SwapMemGib(freeSwapMem) / (1024 * 1024)
 
-	return totalSwapMemGib - freeSwapMemGib
+	return totalSwapMemGib - freeSwapMemGib, nil
 }

@@ -1,8 +1,6 @@
 package memory
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -19,14 +17,14 @@ type MemoryInfo struct {
 }
 
 func NewMemoryInfo() (*MemoryInfo, error) {
-	file, err := fileio.OpenFile("/proc/meminfo")
+	file, err := os.Open("/proc/meminfo")
 	if err != nil {
 		return nil, err
 	}
 
 	totalMemString, err := fileio.ReadLine(1, file)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	totalMemString = strings.TrimPrefix(totalMemString, "MemTotal: ")
@@ -35,7 +33,7 @@ func NewMemoryInfo() (*MemoryInfo, error) {
 
 	totalMem, err := strconv.Atoi(totalMemString)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	totalMemGib := RAMMemGib(totalMem) / (1024 * 1024)
@@ -48,9 +46,6 @@ func NewMemoryInfo() (*MemoryInfo, error) {
 
 func (m *MemoryInfo) Close() error {
 	err := m.file.Close()
-	if err == nil {
-		fmt.Println("Closed /proc/meminfo")
-	}
 	return err
 }
 

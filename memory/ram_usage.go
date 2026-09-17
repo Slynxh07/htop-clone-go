@@ -1,17 +1,16 @@
 package memory
 
 import (
-	"log"
 	"strconv"
 	"strings"
 
 	fileio "github.com/Slynxh07/htop-clone-go/file_io"
 )
 
-func CalculateRAMUsage(m MemoryInfo) RAMMemGib {
+func CalculateRAMUsage(m MemoryInfo) (RAMMemGib, error) {
 	availableMemString, err := fileio.ReadLine(3, m.file)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	availableMemString = strings.TrimPrefix(availableMemString, "MemAvailable: ")
@@ -20,10 +19,10 @@ func CalculateRAMUsage(m MemoryInfo) RAMMemGib {
 
 	availableMem, err := strconv.Atoi(availableMemString)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	availableMemGib := RAMMemGib(availableMem) / (1024 * 1024)
 
-	return m.totalMemGib - availableMemGib
+	return m.totalMemGib - availableMemGib, nil
 }
