@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Slynxh07/htop-clone-go/cpu"
 	"github.com/Slynxh07/htop-clone-go/memory"
 )
 
@@ -19,7 +20,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	cpuInfo, err := cpu.NewCPUInfo()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defer memInfo.Close()
+	defer cpuInfo.Close()
 
 	for {
 		select {
