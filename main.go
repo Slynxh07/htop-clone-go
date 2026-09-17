@@ -26,6 +26,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	fmt.Printf("CPU Cores: %d\n", cpuInfo.CoreAmount)
+
 	defer memInfo.Close()
 	defer cpuInfo.Close()
 
@@ -36,9 +38,18 @@ func main() {
 			return
 		default:
 			totalRam := memInfo.GetTotalMem()
-			usedRam := memory.CalculateRAMUsage(*memInfo)
-			totalSwap := memory.GetTotalSwapMem(*memInfo)
-			usedSwap := memory.CalculateSwapMemUsage(*memInfo, totalSwap)
+			usedRam, err := memory.CalculateRAMUsage(*memInfo)
+			if err != nil {
+				log.Fatal(err)
+			}
+			totalSwap, err := memory.GetTotalSwapMem(*memInfo)
+			if err != nil {
+				log.Fatal(err)
+			}
+			usedSwap, err := memory.CalculateSwapMemUsage(*memInfo, totalSwap)
+			if err != nil {
+				log.Fatal(err)
+			}
 			swapPercent := 0.0
 			if totalSwap > 0 {
 				swapPercent = float64(usedSwap/totalSwap) * 100

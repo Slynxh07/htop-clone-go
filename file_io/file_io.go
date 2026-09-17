@@ -7,14 +7,6 @@ import (
 	"os"
 )
 
-func OpenFile(filepath string) (*os.File, error) {
-	file, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
-	return file, nil
-}
-
 func ReadLine(line int, file *os.File) (string, error) {
 	if line < 1 {
 		return "", fmt.Errorf("line number must be greater than 0")
